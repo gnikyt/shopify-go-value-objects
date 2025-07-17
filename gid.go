@@ -57,6 +57,7 @@ func typeFrom[T Identifiers]() string {
 
 // commonNew creates a new GID from a value.
 // It supports int64, int, and string formats.
+// String formats supported: full GID ("gid://shopify/Type/ID") or numeric string ("123456789").
 func commonNew[T Identifiers](val any) (T, error) {
 	switch v := val.(type) {
 	case int64:
@@ -65,18 +66,25 @@ func commonNew[T Identifiers](val any) (T, error) {
 		return T(int(v)), nil
 	case string:
 		parts := strings.Split(v, "/")
-		if len(parts) < 5 {
-			return T(0), fmt.Errorf("invalid GID format: %v", v)
+		if len(parts) >= 5 {
+			// Handle full GID format: "gid://shopify/Type/ID"
+			typ := typeFrom[T]()
+			if parts[3] != typ {
+				return T(0), fmt.Errorf("expected type %s got %s", typ, parts[3])
+			}
+			cint, err := strconv.ParseInt(parts[4], 10, 64)
+			if err != nil {
+				return T(0), fmt.Errorf("invalid ID in GID: %s", v)
+			}
+			return T(int(cint)), nil
+		} else {
+			// Handle numeric string format: "123456789"
+			cint, err := strconv.ParseInt(v, 10, 64)
+			if err != nil {
+				return T(0), fmt.Errorf("invalid GID format or numeric ID: %v", v)
+			}
+			return T(int(cint)), nil
 		}
-		typ := typeFrom[T]()
-		if parts[3] != typ {
-			return T(0), fmt.Errorf("expected type %s got %s", typ, parts[3])
-		}
-		cint, err := strconv.ParseInt(parts[4], 10, 64)
-		if err != nil {
-			return T(0), fmt.Errorf("invalid ID in GID: %s", v)
-		}
-		return T(int(cint)), nil
 	default:
 		return T(0), fmt.Errorf("unsupported type for GID: %T", val)
 	}
@@ -84,7 +92,8 @@ func commonNew[T Identifiers](val any) (T, error) {
 
 // New creates a new GID from a value.
 // It supports int64, int, and string formats.
-// For strings, it expects the format "gid://shopify/Type/ID".
+// For strings, it expects the full GID format "gid://shopify/Type/ID"
+// or numeric input "292990190".
 // If the value is not recognized, it returns a zero value of the type.
 // It ignores errors in validation, for validation use NewValidated.
 func New[T Identifiers](val any) T {
