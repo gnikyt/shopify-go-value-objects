@@ -5,58 +5,58 @@ import (
 	"fmt"
 )
 
-// InventoryItem represents a GID for a Shopify Inventory Item.
-type InventoryItem int
+// InventoryItemID represents a GID for a Shopify Inventory Item.
+type InventoryItemID int
 
-func (iiid InventoryItem) ID() int {
+func (iiid InventoryItemID) ID() int {
 	return int(iiid)
 }
 
-func (iiid InventoryItem) String() string {
+func (iiid InventoryItemID) String() string {
 	return fmt.Sprintf("gid://shopify/InventoryItem/%d", iiid)
 }
 
-func (iiid InventoryItem) Equal(oiiid Identifier) bool {
-	if other, ok := oiiid.(InventoryItem); ok {
+func (iiid InventoryItemID) Equal(oiiid Identifier) bool {
+	if other, ok := oiiid.(InventoryItemID); ok {
 		return iiid == other
 	}
 	return false
 }
 
-func (iiid InventoryItem) MarshalJSON() ([]byte, error) {
+func (iiid InventoryItemID) MarshalJSON() ([]byte, error) {
 	return json.Marshal(iiid.String())
 }
 
-func (iiid *InventoryItem) UnmarshalJSON(data []byte) error {
-	var gid string
-	if err := json.Unmarshal(data, &gid); err != nil {
+func (iiid *InventoryItemID) UnmarshalJSON(data []byte) error {
+	var val any
+	if err := json.Unmarshal(data, &val); err != nil {
 		return err
 	}
-	*iiid = New[InventoryItem](gid)
+	*iiid = New[InventoryItemID](val)
 	return nil
 }
 
-func (iiid InventoryItem) IsValid() bool {
+func (iiid InventoryItemID) IsValid() bool {
 	return iiid.ID() > 0
 }
 
-// InventoryItems represents a slice of InventoryItem.
-type InventoryItems []InventoryItem
+// InventoryItemIDs represents a slice of InventoryItem.
+type InventoryItemIDs []InventoryItemID
 
-func (iiids InventoryItems) ToIDs() []int {
+func (iiids InventoryItemIDs) ToIDs() []int {
 	return ToIDs(iiids)
 }
 
-func (iiids InventoryItems) ToStrings() []string {
+func (iiids InventoryItemIDs) ToStrings() []string {
 	return ToStrings(iiids)
 }
 
-// NewInventoryItem creates a new InventoryItem from a value.
-func NewInventoryItem(val any) InventoryItem {
-	return New[InventoryItem](val)
+// NewInventoryItemID creates a new InventoryItemID from a value.
+func NewInventoryItemID(val any) InventoryItemID {
+	return New[InventoryItemID](val)
 }
 
-// NewInventoryItemValidated creates a new InventoryItem from a value and validates it.
-func NewInventoryItemValidated(val any) (InventoryItem, error) {
-	return NewValidated[InventoryItem](val)
+// NewInventoryItemIDValidated creates a new InventoryItemID from a value and validates it.
+func NewInventoryItemIDValidated(val any) (InventoryItemID, error) {
+	return NewValidated[InventoryItemID](val)
 }

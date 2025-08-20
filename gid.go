@@ -8,7 +8,7 @@ import (
 
 // Identifiers represents a set of GID types.
 type Identifiers interface {
-	CustomerID | ProductID | VariantID | OrderID | InventoryItem
+	CustomerID | ProductID | VariantID | OrderID | InventoryItemID | AbandonedCheckoutID
 }
 
 // Identifier represents a GID.
@@ -48,21 +48,27 @@ func typeFrom[T Identifiers]() string {
 		return "ProductVariant"
 	case OrderID:
 		return "Order"
-	case InventoryItem:
+	case InventoryItemID:
 		return "InventoryItem"
+	case AbandonedCheckoutID:
+		return "AbandonedCheckout"
 	default:
 		return ""
 	}
 }
 
 // commonNew creates a new GID from a value.
-// It supports int64, int, and string formats.
+// It supports int64, int, float64, float32, and string formats.
 // String formats supported: full GID ("gid://shopify/Type/ID") or numeric string ("123456789").
 func commonNew[T Identifiers](val any) (T, error) {
 	switch v := val.(type) {
 	case int64:
 		return T(int(v)), nil
 	case int:
+		return T(int(v)), nil
+	case float64:
+		return T(int(v)), nil
+	case float32:
 		return T(int(v)), nil
 	case string:
 		parts := strings.Split(v, "/")
@@ -91,9 +97,8 @@ func commonNew[T Identifiers](val any) (T, error) {
 }
 
 // New creates a new GID from a value.
-// It supports int64, int, and string formats.
-// For strings, it expects the full GID format "gid://shopify/Type/ID"
-// or numeric input "292990190".
+// It supports int64, int, float64, float32, and string formats.
+// For strings, it accepts either full GID format "gid://shopify/Type/ID" or numeric string "123456789".
 // If the value is not recognized, it returns a zero value of the type.
 // It ignores errors in validation, for validation use NewValidated.
 func New[T Identifiers](val any) T {

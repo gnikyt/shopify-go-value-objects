@@ -28,11 +28,11 @@ func (cid CustomerID) MarshalJSON() ([]byte, error) {
 }
 
 func (cid *CustomerID) UnmarshalJSON(data []byte) error {
-	var gid string
-	if err := json.Unmarshal(data, &gid); err != nil {
+	var val any
+	if err := json.Unmarshal(data, &val); err != nil {
 		return err
 	}
-	*cid = New[CustomerID](gid)
+	*cid = New[CustomerID](val)
 	return nil
 }
 
@@ -47,8 +47,8 @@ func (cids CustomerIDs) ToIDs() []int {
 	return ToIDs(cids)
 }
 
-func (cids CustomerIDs) ToStrings() []int {
-	return ToIDs(cids)
+func (cids CustomerIDs) ToStrings() []string {
+	return ToStrings(cids)
 }
 
 // NewCustomerID creates a new CustomerID from a value.

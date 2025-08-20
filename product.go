@@ -28,11 +28,11 @@ func (pid ProductID) MarshalJSON() ([]byte, error) {
 }
 
 func (pid *ProductID) UnmarshalJSON(data []byte) error {
-	var gid string
-	if err := json.Unmarshal(data, &gid); err != nil {
+	var val any
+	if err := json.Unmarshal(data, &val); err != nil {
 		return err
 	}
-	*pid = New[ProductID](gid)
+	*pid = New[ProductID](val)
 	return nil
 }
 

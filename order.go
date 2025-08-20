@@ -28,11 +28,11 @@ func (oid OrderID) MarshalJSON() ([]byte, error) {
 }
 
 func (oid *OrderID) UnmarshalJSON(data []byte) error {
-	var gid string
-	if err := json.Unmarshal(data, &gid); err != nil {
+	var val any
+	if err := json.Unmarshal(data, &val); err != nil {
 		return err
 	}
-	*oid = New[OrderID](gid)
+	*oid = New[OrderID](val)
 	return nil
 }
 

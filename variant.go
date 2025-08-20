@@ -28,11 +28,11 @@ func (vid VariantID) MarshalJSON() ([]byte, error) {
 }
 
 func (vid *VariantID) UnmarshalJSON(data []byte) error {
-	var gid string
-	if err := json.Unmarshal(data, &gid); err != nil {
+	var val any
+	if err := json.Unmarshal(data, &val); err != nil {
 		return err
 	}
-	*vid = New[VariantID](gid)
+	*vid = New[VariantID](val)
 	return nil
 }
 
